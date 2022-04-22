@@ -1,0 +1,38 @@
+{
+    "timestamp": "2021-03-23T06:07:42.331Z",
+    "AuthorizationType": "SMSOTP",
+    "consent": {
+        "purpose": {
+            "text": "string",
+            "code": "CAREMGT",
+            "refUri": "string"
+        },
+        "patient": {
+            "id": "cb73be82-4dcd-4fc9-9faa-cb920866c3ce"
+        },
+        "hip": {
+            "id": "7f27cbb6-2504-4b4c-b78c-66ab4c346cd4"
+        },
+        "hiu": {
+            "id": "7f27cbb6-2504-4b4c-b78c-66ab4c346cd4"
+        },
+        "requester": {
+            "name": "utkarsh2022",
+            "identifier": {
+                "type": "REGNO",
+                "value": "9b9cd073-5f8a-4964-8a5d-b1abb3dc0b4f",
+                "system": " https://e-manas.karnataka.gov.in/"
+            }
+        },
+        "hiTypes": [
+            "OPBMR", "IPBMR", "AdvanceDirective"
+        ],
+        "permission": {
+            "accessMode": " STORE or VIEW ",
+            "dateRange": {
+                "from": "2016-03-23T06:07:42.331Z",
+                "to": "2021-03-23T06:07:42.331Z"
+            }
+        }
+    }
+}
