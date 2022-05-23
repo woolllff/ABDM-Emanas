@@ -3,8 +3,6 @@ const express = require('express');
 // const path = require("path");
 const axios = require('axios');
 const cors = require('cors')
-var token = null;
-
 
 //Instantiate an express app,
 const app = express();
@@ -22,13 +20,20 @@ const port = 5050;
 
 
 
-
+var token = null;
+var consentRequestID = null;
+var consentID = null;
 
 function auth(username,password) {
     axios
         .post('http://3.111.8.53:8080/MHMS_FHIR/fhir/hiu/authenticate', {
-            hiu_username: username,
-            hiu_password: password
+            "hiu_username": username,
+            "hiu_password": password
+        }, {
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Forwarded-Host': '3.111.8.53:8080'
+              }
         })
         .then(res => {
             console.log(res.body)
@@ -43,8 +48,86 @@ function auth(username,password) {
 }
 
 
+function consentGen(pid,hiu,hip,name) {
+    axios
+        .post('http://3.111.8.53:8080/MHMS_FHIR/fhir/hiu/consentRequest', {
+            "timestamp": "2021-03-23T06:07:42.331Z",
+            "AuthorizationType": "SMSOTP",
+            "consent": {
+                "purpose": {
+                    "text": "string",
+                    "code": "CAREMGT",
+                    "refUri": "string"
+                },
+                "patient": {
+                    "id": pid
+                },
+                "hip": {
+                    "id": hip
+                },
+                "hiu": {
+                    "id": hiu
+                },
+                "requester": {
+                    "name": "name",
+                    "identifier": {
+                        "type": "REGNO",
+                        "value": name,
+                        "system": " https://e-manas.karnataka.gov.in/"
+                    }
+                },
+                "hiTypes": [
+                    "OPBMR", "IPBMR", "AdvanceDirective"
+                ],
+                "permission": {
+                    "accessMode": " STORE or VIEW ",
+                    "dateRange": {
+                        "from": "2016-03-23T06:07:42.331Z",
+                        "to": "2021-03-23T06:07:42.331Z"
+                    }
+                }
+            }
+
+        }, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+        })
+        .then(res => {
+            console.log(`statusCode: ${res.status}`)
+            console.log(res)
+            if (res.errors == null) {
+                consentRequestID = res.response.ConsentRequestID;
+            }
+        })
+        .catch(error => {
+            console.error(error)
+        })
+}
 
 
+function otpVerify(otp)
+{
+    axios
+    .post('http://3.111.8.53:8080/MHMS_FHIR/fhir/hiu/authenticate', {
+        "Otp" : otp ,
+        "ConsentRequestID" : consentRequestID
+    }, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+    })
+    .then(res => {
+        console.log(res.body)
+        if (res.errors == null) {
+            consentID = res.response.consentID;
+        }
+        // console.log(token);
+    })
+    .catch(error => {
+        console.error(error)
+    })
+}
 
 
 
@@ -60,7 +143,23 @@ app.post('/login', (req, res) => {
     console.log(req.body)
     console.log(req.body.username)
     auth(req.body.username, req.body.password)
-    res.send({message : "asjdnl"})
+    res.send({message : "success"})
+
+});
+
+app.post('/consentRequest', (req, res) => {
+    console.log(req.body)
+    // console.log(req.body.username)
+    consentGen(req.body.pid, req.body.hiuid, req.body.hipid, req.body.requestor)
+    res.send({message : "success"})
+
+});
+
+app.post('/otp', (req, res) => {
+    console.log(req.body)
+    // console.log(req.body.username)
+    otpVerify(otp)
+    res.send({message : "success"})
 
 });
 

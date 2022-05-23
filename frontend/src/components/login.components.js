@@ -3,6 +3,7 @@ import { FormControl } from '@chakra-ui/react'
 import { Button } from '@chakra-ui/react'
 import { Input } from '@chakra-ui/react'
 import axios from 'axios';
+import { Navigate } from "react-router-dom";
 
 export default class Login extends React.Component {
 
@@ -12,6 +13,7 @@ export default class Login extends React.Component {
             username: "",
             password: ""
         }
+        this.login_mes = "Login to Emanas"
         this.handleSubmit = this.handleSubmit.bind(this)
     }
 
@@ -21,6 +23,7 @@ export default class Login extends React.Component {
             .post('http://localhost:5050/login', this.state)
             .then(res => {
                 console.log(res.data)
+                return (<Navigate to={"/makecr"} />)
             })
             .catch(error => {
                 console.error(error)
@@ -39,7 +42,7 @@ export default class Login extends React.Component {
     render() {
         return (
             <div className='login'>
-                <h1>Login to ABDM-Emanas</h1>
+                <h1>{this.login_mes}</h1>
                 <FormControl>
                     <Input id='username' type='text' placeholder="Username" name="username" value={this.state.username} onChange={e => this.handleChangeUsername(e)} />
                     <Input id='password' type="password" placeholder='Password' name="username" value={this.state.password} onChange={e => this.handleChangePassword(e)} />
